@@ -229,6 +229,26 @@
   hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
   .export-btn { display: flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--surface2); border: 1px solid var(--accent); color: var(--accent); border-radius: 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; transition: all 0.2s; margin-bottom: 14px; }
   .export-btn:hover { background: rgba(201,169,110,0.1); }
+
+  /* CATEGORY CHIPS */
+  .chip-bar { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+  .chip {
+    padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 600;
+    cursor: pointer; border: 1.5px solid var(--border); background: var(--surface2);
+    color: var(--muted); transition: all 0.18s; white-space: nowrap; user-select: none;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--text); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #0f0e11; }
+  .chip.all { border-color: var(--muted); }
+  .chip.all.active { background: var(--surface2); border-color: var(--text); color: var(--text); }
+  .chip-result-label { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+
+  /* INVESTMENT SUB-ITEMS */
+  .invest-sub-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .invest-sub-row { display: flex; gap: 8px; align-items: center; }
+  .invest-sub-row input { padding: 6px 10px; font-size: 13px; }
+  .invest-total-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0 0; border-top: 1px solid var(--border); margin-top: 8px; font-size: 13px; color: var(--muted); }
+  .invest-total-row strong { color: var(--accent2); font-family: 'DM Serif Display', serif; font-size: 16px; }
 </style>
 </head>
 <body>
@@ -382,6 +402,17 @@
       </div>
     </div>
 
+    <div class="card">
+      <div class="card-title">Savings / Investment Breakdown</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Break down your savings into specific instruments. The total will show as one line in the summary.</p>
+      <div id="invest-sub-list" class="invest-sub-list"></div>
+      <button class="btn btn-ghost" onclick="addInvestSub()" style="margin-top:10px;width:100%">+ Add Item</button>
+      <div class="invest-total-row">
+        <span>Total Savings / Investment</span>
+        <strong id="invest-total-display">RM 0.00</strong>
+      </div>
+    </div>
+
     <div class="data-info">
       <div class="data-info-icon">💾</div>
       <div>
@@ -478,6 +509,7 @@ function getMonthData(key) {
       income: prev.income,
       extraIncome: prev.extraIncome,
       savings: prev.savings,
+      investSubs: prev.investSubs ? JSON.parse(JSON.stringify(prev.investSubs)) : [{name:'KWSP',amount:0}],
       fixedExpenses: prev.fixedExpenses.map(r => ({...r, actual: ''})),
       categories: JSON.parse(JSON.stringify(prev.categories)),
       transactions: [],
@@ -485,6 +517,7 @@ function getMonthData(key) {
   }
   return {
     income: 3600, extraIncome: 0, savings: 1100,
+    investSubs: [{name:'KWSP', amount:200},{name:'ASB', amount:300}],
     fixedExpenses: JSON.parse(JSON.stringify(DEFAULT_FIXED)),
     categories: JSON.parse(JSON.stringify(DEFAULT_CATS)),
     transactions: [],
@@ -809,6 +842,53 @@ function renderFixed() {
       </div>
       <button class="btn btn-danger" onclick="removeCat(${i})" style="margin-top:4px">✕</button>
     </div>`).join('');
+
+  // Investment sub-items
+  renderInvestSubs(data);
+}
+
+function renderInvestSubs(data) {
+  if (!data.investSubs) data.investSubs = [];
+  const total = data.investSubs.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
+  document.getElementById('invest-sub-list').innerHTML = data.investSubs.map((r,i) => `
+    <div class="invest-sub-row">
+      <div class="form-group">
+        <input value="${r.name}" placeholder="e.g. KWSP" onchange="updateInvestSub(${i},'name',this.value)">
+      </div>
+      <div class="form-group" style="max-width:130px">
+        <input type="number" value="${r.amount||''}" placeholder="Amount" onchange="updateInvestSub(${i},'amount',this.value)">
+      </div>
+      <button class="btn btn-danger" onclick="removeInvestSub(${i})">✕</button>
+    </div>`).join('');
+  document.getElementById('invest-total-display').textContent = fmt(total);
+  // Sync savings field with total
+  document.getElementById('fix-savings').value = total || (data.savings||'');
+}
+
+function updateInvestSub(i, key, val) {
+  const data = getData();
+  if (!data.investSubs) data.investSubs = [];
+  data.investSubs[i][key] = key === 'amount' ? parseFloat(val)||0 : val;
+  // Auto-sum savings
+  data.savings = data.investSubs.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
+  saveMonthData(data);
+  renderInvestSubs(data);
+}
+
+function addInvestSub() {
+  const data = getData();
+  if (!data.investSubs) data.investSubs = [];
+  data.investSubs.push({name:'', amount:0});
+  saveMonthData(data);
+  renderInvestSubs(data);
+}
+
+function removeInvestSub(i) {
+  const data = getData();
+  data.investSubs.splice(i, 1);
+  data.savings = data.investSubs.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
+  saveMonthData(data);
+  renderInvestSubs(data);
 }
 
 function updateFixed(i, key, val) {
@@ -833,7 +913,10 @@ function saveFixed() {
   const data = getData();
   data.income = parseFloat(document.getElementById('fix-income').value)||0;
   data.extraIncome = parseFloat(document.getElementById('fix-extra-income').value)||0;
-  data.savings = parseFloat(document.getElementById('fix-savings').value)||0;
+  // savings is auto-summed from investSubs; only use manual field if no subs defined
+  if (!data.investSubs || data.investSubs.length === 0) {
+    data.savings = parseFloat(document.getElementById('fix-savings').value)||0;
+  }
   saveMonthData(data);
   toast('✓ Saved for ' + MONTHS[currentMonth-1] + ' ' + currentYear);
 }
@@ -841,6 +924,47 @@ function saveFixed() {
 // ─────────────────────────────
 // MONTH SUMMARY
 // ─────────────────────────────
+let activeChips = new Set(); // empty = show all
+
+function toggleChip(catName) {
+  if (catName === '__all__') {
+    activeChips.clear();
+  } else {
+    if (activeChips.has(catName)) activeChips.delete(catName);
+    else activeChips.add(catName);
+  }
+  renderSummaryTransactions();
+  updateChipUI();
+}
+
+function updateChipUI() {
+  document.querySelectorAll('.chip').forEach(chip => {
+    const val = chip.dataset.cat;
+    if (val === '__all__') chip.classList.toggle('active', activeChips.size === 0);
+    else chip.classList.toggle('active', activeChips.has(val));
+  });
+}
+
+function renderSummaryTransactions() {
+  const data = getData();
+  const txs = [...data.transactions].reverse();
+  const filtered = activeChips.size === 0 ? txs : txs.filter(tx => activeChips.has(tx.cat));
+  const filteredTotal = filtered.reduce((s,tx) => s + tx.amount, 0);
+
+  const wrap = document.getElementById('summary-tx-section');
+  if (!wrap) return;
+
+  const label = activeChips.size === 0
+    ? `Showing all ${filtered.length} transactions`
+    : `${filtered.length} transaction${filtered.length!==1?'s':''} in: ${[...activeChips].join(', ')} — Total: ${fmt(filteredTotal)}`;
+
+  wrap.innerHTML = `
+    <div class="chip-result-label">${label}</div>
+    ${!filtered.length
+      ? `<div class="empty"><div class="empty-icon">🔍</div>No transactions for selected categories.</div>`
+      : `<div class="tx-list">${filtered.map(tx => txHtml(tx, null, true)).join('')}</div>`}`;
+}
+
 function renderSummary() {
   const data = getData();
   const totalInc = (data.income||0)+(data.extraIncome||0);
@@ -850,6 +974,16 @@ function renderSummary() {
   const remaining = totalInc - fixTotal - spentTotal - savedActual;
   const catMap = txsByCategory(data);
 
+  // Build invest subs display
+  const investSubs = data.investSubs && data.investSubs.length
+    ? data.investSubs.filter(r => r.name || r.amount)
+    : null;
+  const investDisplay = investSubs
+    ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:10px">
+        ${investSubs.map(r=>`<span style="font-size:12px;color:var(--muted);background:var(--surface2);padding:3px 10px;border-radius:99px;border:1px solid var(--border)">${r.name}: <span style="color:var(--accent2)">${fmt(r.amount)}</span></span>`).join('')}
+       </div>`
+    : '';
+
   document.getElementById('summary-content').innerHTML = `
     <div class="summary-totals">
       <div class="summary-total-card"><div class="s-label">Total Income</div><div class="s-val">${fmt(totalInc)}</div></div>
@@ -857,6 +991,7 @@ function renderSummary() {
       <div class="summary-total-card"><div class="s-label">Variable Spending</div><div class="s-val neg">${fmt(spentTotal)}</div></div>
       <div class="summary-total-card"><div class="s-label">Remaining</div><div class="s-val ${remaining>=0?'pos':'neg'}">${fmt(remaining)}</div></div>
     </div>
+
     <div class="two-col">
       <div class="card">
         <div class="card-title">Fixed Expenses</div>
@@ -889,19 +1024,36 @@ function renderSummary() {
         </table>
       </div>
     </div>
+
     <div class="card">
       <div class="card-title">Savings & Balance</div>
       <div style="display:flex;flex-wrap:wrap;gap:24px">
-        <div><div class="stat-label" style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Savings / Investment</div><div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent2)">${fmt(savedActual)}</div></div>
+        <div>
+          <div class="stat-label" style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Savings / Investment</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent2)">${fmt(savedActual)}</div>
+          ${investDisplay}
+        </div>
         <div><div class="stat-label" style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Remaining Balance</div><div style="font-family:'DM Serif Display',serif;font-size:22px;color:${remaining>=0?'var(--green)':'var(--red)'}">${fmt(remaining)}</div></div>
         <div><div class="stat-label" style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Savings Rate</div><div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--text)">${totalInc?((savedActual/totalInc)*100).toFixed(1):0}%</div></div>
       </div>
     </div>
+
     ${data.transactions.length ? `
     <div class="card">
-      <div class="card-title">All Transactions This Month</div>
-      <div class="tx-list">${[...data.transactions].reverse().map(tx=>txHtml(tx,null,true)).join('')}</div>
+      <div class="section-header" style="margin-bottom:12px">
+        <div class="card-title" style="margin-bottom:0">Transactions</div>
+        <span style="font-size:11px;color:var(--muted)">tap category to filter</span>
+      </div>
+      <div class="chip-bar">
+        <span class="chip all active" data-cat="__all__" onclick="toggleChip('__all__')">All</span>
+        ${data.categories.map(c=>`<span class="chip" data-cat="${c.name}" onclick="toggleChip('${c.name}')" style="border-color:${catColor(c.name)}20">${c.name}</span>`).join('')}
+      </div>
+      <div id="summary-tx-section"></div>
     </div>` : ''}`;
+
+  // Reset chips on fresh render and populate transactions
+  activeChips.clear();
+  renderSummaryTransactions();
 }
 
 function exportSummary() {
@@ -916,6 +1068,11 @@ function exportSummary() {
   let txt = `SPENDING SUMMARY — ${monthName.toUpperCase()}\n${'='.repeat(40)}\n\n`;
   txt += `Net Income:        ${fmt(data.income)}\nAdditional Income: ${fmt(data.extraIncome)}\nTotal Income:      ${fmt(totalInc)}\n\n`;
   txt += `Fixed Expenses:    ${fmt(fixTotal)}\nVariable Spending: ${fmt(spentTotal)}\nSavings:           ${fmt(savedActual)}\nRemaining:         ${fmt(remaining)}\n\n`;
+  if (data.investSubs && data.investSubs.length) {
+    txt += `SAVINGS BREAKDOWN:\n${'-'.repeat(30)}\n`;
+    data.investSubs.forEach(r => { txt += `  ${r.name}: ${fmt(r.amount)}\n`; });
+    txt += '\n';
+  }
   txt += `FIXED EXPENSES:\n${'-'.repeat(30)}\n`;
   data.fixedExpenses.forEach(r => { txt += `  ${r.name}: ${fmt(parseFloat(r.actual)||parseFloat(r.budgeted)||0)}\n`; });
   txt += `\nVARIABLE SPENDING:\n${'-'.repeat(30)}\n`;
