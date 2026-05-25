@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Duitku — Spending Tracker (Supabase)</title>
+    <title>Duitku — Multi-User Spending Tracker</title>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap"
       rel="stylesheet"
@@ -37,7 +37,61 @@
         font-size: 14px;
       }
 
-      /* HEADER */
+      /* AUTH SCREEN */
+      #auth-screen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .auth-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: var(--card-shadow);
+      }
+      .auth-logo {
+        font-family: "DM Serif Display", serif;
+        font-size: 28px;
+        color: var(--accent);
+        text-align: center;
+        margin-bottom: 8px;
+      }
+      .auth-subtitle {
+        color: var(--muted);
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 13px;
+      }
+      .auth-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 10px;
+      }
+      .auth-tabs button {
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-weight: 600;
+        cursor: pointer;
+        padding: 8px 12px;
+        transition: color 0.2s;
+      }
+      .auth-tabs button.active {
+        color: var(--accent);
+      }
+
+      /* MAIN APP */
+      #app-container {
+        display: none;
+      }
+
       header {
         padding: 14px 20px;
         border-bottom: 1px solid var(--border);
@@ -50,6 +104,20 @@
         z-index: 100;
         gap: 12px;
       }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .user-email {
+        font-size: 12px;
+        color: var(--muted);
+        display: none;
+      }
+      @media (min-width: 600px) {
+        .user-email { display: block; }
+      }
+
       .logo {
         font-family: "DM Serif Display", serif;
         font-size: 20px;
@@ -58,7 +126,6 @@
         white-space: nowrap;
       }
 
-      /* MONTH SWITCHER — prominent */
       .month-switcher {
         display: flex;
         align-items: center;
@@ -94,7 +161,6 @@
         letter-spacing: 0.3px;
       }
 
-      /* NAV TABS */
       nav {
         display: flex;
         gap: 2px;
@@ -104,9 +170,7 @@
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
       }
-      nav::-webkit-scrollbar {
-        display: none;
-      }
+      nav::-webkit-scrollbar { display: none; }
       nav button {
         background: none;
         border: none;
@@ -119,39 +183,25 @@
         border-bottom: 2px solid transparent;
         transition: all 0.2s;
         white-space: nowrap;
-        letter-spacing: 0.2px;
       }
       nav button.active {
         color: var(--accent);
         border-bottom-color: var(--accent);
       }
-      nav button:hover:not(.active) {
-        color: var(--text);
-      }
 
-      /* MAIN */
       main {
         padding: 16px;
         max-width: 900px;
         margin: 0 auto;
       }
-      .tab-panel {
-        display: none;
-      }
-      .tab-panel.active {
-        display: block;
-      }
+      .tab-panel { display: none; }
+      .tab-panel.active { display: block; }
 
-      /* MONTH BANNER — shown in each tab */
       .month-banner {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: linear-gradient(
-          135deg,
-          rgba(201, 169, 110, 0.12),
-          rgba(124, 111, 205, 0.08)
-        );
+        background: linear-gradient(135deg, rgba(201, 169, 110, 0.12), rgba(124, 111, 205, 0.08));
         border: 1px solid rgba(201, 169, 110, 0.3);
         border-radius: 12px;
         padding: 12px 16px;
@@ -181,16 +231,11 @@
         border-radius: 7px;
         cursor: pointer;
         font-size: 14px;
-        transition: background 0.2s;
         display: flex;
         align-items: center;
         justify-content: center;
       }
-      .month-banner-nav button:hover {
-        background: var(--border);
-      }
 
-      /* CARDS */
       .card {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -207,7 +252,6 @@
         letter-spacing: 0.3px;
       }
 
-      /* STAT GRID */
       .stat-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -215,9 +259,7 @@
         margin-bottom: 14px;
       }
       @media (min-width: 600px) {
-        .stat-grid {
-          grid-template-columns: repeat(3, 1fr);
-        }
+        .stat-grid { grid-template-columns: repeat(3, 1fr); }
       }
       .stat-card {
         background: var(--surface);
@@ -230,26 +272,15 @@
       .stat-card::before {
         content: "";
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
+        top: 0; left: 0; right: 0;
         height: 3px;
       }
-      .stat-card.income::before {
-        background: var(--green);
-      }
-      .stat-card.fixed::before {
-        background: #e8a46c;
-      }
-      .stat-card.spent::before {
-        background: var(--accent);
-      }
-      .stat-card.savings::before {
-        background: var(--accent2);
-      }
-      .stat-card.balance::before {
-        background: var(--green);
-      }
+      .stat-card.income::before { background: var(--green); }
+      .stat-card.fixed::before { background: #e8a46c; }
+      .stat-card.spent::before { background: var(--accent); }
+      .stat-card.savings::before { background: var(--accent2); }
+      .stat-card.balance::before { background: var(--green); }
+
       .stat-label {
         font-size: 10px;
         font-weight: 600;
@@ -281,19 +312,15 @@
         transition: width 0.4s ease;
       }
 
-      /* TWO COL */
       .two-col {
         display: grid;
         grid-template-columns: 1fr;
         gap: 14px;
       }
       @media (min-width: 700px) {
-        .two-col {
-          grid-template-columns: 1fr 1fr;
-        }
+        .two-col { grid-template-columns: 1fr 1fr; }
       }
 
-      /* FORMS */
       .form-row {
         display: flex;
         gap: 8px;
@@ -312,12 +339,9 @@
         font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
         color: var(--muted);
       }
-      input,
-      select,
-      textarea {
+      input, select {
         background: var(--surface2);
         border: 1px solid var(--border);
         border-radius: 9px;
@@ -327,16 +351,8 @@
         font-size: 14px;
         width: 100%;
         outline: none;
-        transition: border-color 0.2s;
       }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        border-color: var(--accent);
-      }
-      select option {
-        background: var(--surface2);
-      }
+      input:focus { border-color: var(--accent); }
 
       .btn {
         padding: 9px 18px;
@@ -346,64 +362,15 @@
         font-family: "DM Sans", sans-serif;
         font-size: 13px;
         font-weight: 600;
-        letter-spacing: 0.3px;
         transition: all 0.2s;
         white-space: nowrap;
       }
-      .btn-primary {
-        background: var(--accent);
-        color: #0f0e11;
-      }
-      .btn-primary:hover {
-        background: #d4b47e;
-      }
-      .btn-ghost {
-        background: var(--surface2);
-        color: var(--text);
-        border: 1px solid var(--border);
-      }
-      .btn-ghost:hover {
-        background: var(--border);
-      }
-      .btn-danger {
-        background: transparent;
-        color: var(--red);
-        border: 1px solid transparent;
-        padding: 4px 7px;
-        font-size: 12px;
-        border-radius: 6px;
-      }
-      .btn-danger:hover {
-        background: rgba(232, 108, 108, 0.1);
-      }
-      .btn-edit {
-        background: transparent;
-        color: var(--muted);
-        border: 1px solid transparent;
-        padding: 4px 7px;
-        font-size: 12px;
-        border-radius: 6px;
-      }
-      .btn-edit:hover {
-        background: rgba(201, 169, 110, 0.1);
-        color: var(--accent);
-      }
+      .btn-primary { background: var(--accent); color: #0f0e11; }
+      .btn-primary:hover { background: #d4b47e; }
+      .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+      .btn-danger { background: transparent; color: var(--red); border: 1px solid transparent; font-size: 12px; }
 
-      /* ADD TX PANEL */
-      .add-tx-panel {
-        background: var(--surface2);
-        border: 1px dashed var(--border);
-        border-radius: 12px;
-        padding: 14px;
-        margin-bottom: 14px;
-      }
-
-      /* TX LIST */
-      .tx-list {
-        display: flex;
-        flex-direction: column;
-        gap: 7px;
-      }
+      .tx-list { display: flex; flex-direction: column; gap: 7px; }
       .tx-item {
         display: flex;
         align-items: center;
@@ -412,929 +379,391 @@
         border: 1px solid var(--border);
         border-radius: 10px;
         padding: 10px 12px;
-        transition: border-color 0.2s;
       }
-      .tx-item:hover {
-        border-color: var(--accent);
-      }
-      .tx-item.editing {
-        border-color: var(--accent);
-        background: rgba(201, 169, 110, 0.05);
-      }
-      .tx-cat-dot {
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .tx-info {
-        flex: 1;
-        min-width: 0;
-      }
-      .tx-top {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-      }
-      .tx-cat-badge {
-        font-size: 10px;
-        font-weight: 600;
-        padding: 2px 7px;
-        border-radius: 99px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        background: var(--border);
-        color: var(--muted);
-      }
-      .tx-date {
-        font-size: 11px;
-        color: var(--muted);
-      }
-      .tx-amount {
-        font-family: "DM Serif Display", serif;
-        font-size: 15px;
-        color: var(--text);
-        margin-left: auto;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-      .tx-remark {
-        font-size: 11px;
-        color: var(--muted);
-        margin-top: 2px;
-      }
-      .tx-actions {
-        display: flex;
-        gap: 2px;
-        flex-shrink: 0;
-      }
+      .tx-cat-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+      .tx-info { flex: 1; min-width: 0; }
+      .tx-cat-badge { font-size: 10px; padding: 2px 7px; border-radius: 99px; background: var(--border); color: var(--muted); }
+      .tx-amount { font-family: "DM Serif Display", serif; font-size: 15px; margin-left: auto; }
 
-      /* INLINE EDIT ROW */
-      .tx-edit-row {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-        flex-wrap: wrap;
-        background: rgba(201, 169, 110, 0.05);
-        border: 1px solid var(--accent);
-        border-radius: 10px;
-        padding: 10px 12px;
-        margin-top: 2px;
-      }
-      .tx-edit-row input,
-      .tx-edit-row select {
-        padding: 6px 10px;
-        font-size: 13px;
-      }
-      .tx-edit-row .form-group {
-        min-width: 80px;
-      }
+      .fix-table { width: 100%; border-collapse: collapse; }
+      .fix-table th { text-align: left; font-size: 10px; color: var(--muted); padding: 0 0 8px; border-bottom: 1px solid var(--border); }
+      .fix-table td { padding: 8px 0; border-bottom: 1px solid rgba(46, 42, 56, 0.5); font-size: 13px; }
 
-      /* CATEGORY BREAKDOWN */
-      .cat-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 10px;
-      }
-      .cat-label {
-        width: 130px;
-        flex-shrink: 0;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        overflow: hidden;
-      }
-      .cat-bar-wrap {
-        flex: 1;
-        background: var(--surface2);
-        border-radius: 99px;
-        height: 7px;
-        overflow: hidden;
-      }
-      .cat-bar {
-        height: 100%;
-        border-radius: 99px;
-        transition: width 0.4s ease;
-      }
-      .cat-amount {
-        width: 80px;
-        text-align: right;
-        font-size: 12px;
-        color: var(--muted);
-      }
-      .badge {
-        display: inline-block;
-        padding: 1px 6px;
-        border-radius: 99px;
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .badge-over {
-        background: rgba(232, 108, 108, 0.15);
-        color: var(--red);
-      }
-      .badge-ok {
-        background: rgba(86, 196, 150, 0.15);
-        color: var(--green);
-      }
+      .trend-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+      .trend-table td { padding: 8px 10px; border-bottom: 1px solid rgba(46, 42, 56, 0.5); text-align: right; color: var(--muted); }
 
-      /* FIXED TABLE */
-      .fix-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      .fix-table th {
-        text-align: left;
-        font-size: 10px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        color: var(--muted);
-        padding: 0 0 8px;
-        border-bottom: 1px solid var(--border);
-      }
-      .fix-table td {
-        padding: 8px 0;
-        border-bottom: 1px solid rgba(46, 42, 56, 0.5);
-        font-size: 13px;
-      }
-      .fix-table tr:last-child td {
-        border-bottom: none;
-      }
-      .fix-table input {
-        padding: 6px 10px;
-        font-size: 13px;
-      }
-
-      /* SECTION HEADER */
-      .section-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-      }
-      .section-header .card-title {
-        margin-bottom: 0;
-      }
-
-      /* SUMMARY */
-      .summary-totals {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        margin-bottom: 14px;
-      }
-      @media (min-width: 500px) {
-        .summary-totals {
-          grid-template-columns: repeat(4, 1fr);
-        }
-      }
-      .summary-total-card {
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 12px 14px;
-        text-align: center;
-      }
-      .s-label {
-        font-size: 10px;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: 4px;
-      }
-      .s-val {
-        font-family: "DM Serif Display", serif;
-        font-size: 18px;
-      }
-      .s-val.pos {
-        color: var(--green);
-      }
-      .s-val.neg {
-        color: var(--red);
-      }
-
-      /* TREND TABLE */
-      .trend-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 12px;
-        overflow-x: auto;
-        display: block;
-      }
-      .trend-table th {
-        text-align: right;
-        font-size: 10px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        color: var(--muted);
-        padding: 0 10px 8px;
-        border-bottom: 1px solid var(--border);
-        white-space: nowrap;
-      }
-      .trend-table th:first-child {
-        text-align: left;
-      }
-      .trend-table td {
-        padding: 8px 10px;
-        border-bottom: 1px solid rgba(46, 42, 56, 0.5);
-        text-align: right;
-        color: var(--muted);
-        white-space: nowrap;
-      }
-      .trend-table td:first-child {
-        text-align: left;
-        color: var(--text);
-      }
-      .trend-table tr:last-child td {
-        border-bottom: none;
-      }
-
-      /* CHART */
-      .chart-wrap {
-        position: relative;
-        height: 220px;
-      }
-
-      /* EMPTY */
-      .empty {
-        text-align: center;
-        padding: 32px 0;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .empty-icon {
-        font-size: 28px;
-        margin-bottom: 8px;
-      }
-
-      /* TOAST */
       #toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: var(--green);
-        color: #0f0e11;
-        padding: 9px 16px;
-        border-radius: 10px;
-        font-size: 13px;
-        font-weight: 600;
-        opacity: 0;
-        transform: translateY(10px);
-        transition: all 0.3s;
-        pointer-events: none;
-        z-index: 999;
+        position: fixed; bottom: 20px; right: 20px;
+        background: var(--green); color: #0f0e11;
+        padding: 9px 16px; border-radius: 10px;
+        font-size: 13px; font-weight: 600;
+        opacity: 0; transform: translateY(10px);
+        transition: all 0.3s; pointer-events: none; z-index: 999;
       }
-      #toast.show {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      #toast.error {
-        background: var(--red);
-        color: #fff;
-      }
+      #toast.show { opacity: 1; transform: translateY(0); }
+      #toast.error { background: var(--red); color: #fff; }
 
-      /* DATA INFO */
-      .data-info {
-        background: rgba(124, 111, 205, 0.08);
-        border: 1px solid rgba(124, 111, 205, 0.2);
-        border-radius: 10px;
-        padding: 12px 14px;
-        font-size: 12px;
-        color: var(--muted);
-        margin-bottom: 14px;
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-      }
-      .data-info-icon {
-        font-size: 16px;
-        flex-shrink: 0;
-        margin-top: 1px;
-      }
-
-      hr {
-        border: none;
-        border-top: 1px solid var(--border);
-        margin: 12px 0;
-      }
-      .export-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 18px;
-        background: var(--surface2);
-        border: 1px solid var(--accent);
-        color: var(--accent);
-        border-radius: 10px;
-        cursor: pointer;
-        font-family: "DM Sans", sans-serif;
-        font-size: 13px;
-        font-weight: 600;
-        transition: all 0.2s;
-        margin-bottom: 14px;
-      }
-      .export-btn:hover {
-        background: rgba(201, 169, 110, 0.1);
-      }
-
-      /* CATEGORY CHIPS */
-      .chip-bar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-        margin-bottom: 14px;
-      }
-      .chip {
-        padding: 5px 12px;
-        border-radius: 99px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        border: 1.5px solid var(--border);
-        background: var(--surface2);
-        color: var(--muted);
-        transition: all 0.18s;
-        white-space: nowrap;
-        user-select: none;
-      }
-      .chip:hover {
-        border-color: var(--accent);
-        color: var(--text);
-      }
-      .chip.active {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #0f0e11;
-      }
-      .chip.all {
-        border-color: var(--muted);
-      }
-      .chip.all.active {
-        background: var(--surface2);
-        border-color: var(--text);
-        color: var(--text);
-      }
-      .chip-result-label {
-        font-size: 12px;
-        color: var(--muted);
-        margin-bottom: 10px;
-      }
-
-      /* INVESTMENT SUB-ITEMS */
-      .invest-sub-list {
-        margin-top: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-      .invest-sub-row {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-      .invest-sub-row input {
-        padding: 6px 10px;
-        font-size: 13px;
-      }
-      .invest-total-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 0 0;
-        border-top: 1px solid var(--border);
-        margin-top: 8px;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .invest-total-row strong {
-        color: var(--accent2);
-        font-family: "DM Serif Display", serif;
-        font-size: 16px;
-      }
-
-      /* LOADING OVERLAY */
       #loading-overlay {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         background: rgba(15, 14, 17, 0.8);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        display: none;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        z-index: 1000; display: none;
       }
-      #loading-overlay.active {
-        display: flex;
-      }
-      .spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid var(--surface2);
-        border-top: 4px solid var(--accent);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin-bottom: 12px;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
+      #loading-overlay.active { display: flex; }
+      .spinner { width: 40px; height: 40px; border: 4px solid var(--surface2); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
   </head>
   <body>
-    <div id="loading-overlay">
-      <div class="spinner"></div>
-      <div>Loading from Supabase...</div>
+    <!-- ── AUTH SCREEN ── -->
+    <div id="auth-screen">
+      <div class="auth-card">
+        <div class="auth-logo">✦ Duitku</div>
+        <div class="auth-subtitle">Sign in to sync your spending data</div>
+        
+        <div class="auth-tabs">
+          <button id="tab-login" class="active" onclick="toggleAuthTab('login')">Login</button>
+          <button id="tab-signup" onclick="toggleAuthTab('signup')">Sign Up</button>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 12px">
+          <label>Email</label>
+          <input type="email" id="auth-email" placeholder="hello@example.com" />
+        </div>
+        <div class="form-group" style="margin-bottom: 24px">
+          <label>Password</label>
+          <input type="password" id="auth-password" placeholder="••••••••" />
+        </div>
+
+        <button id="auth-btn" class="btn btn-primary" style="width: 100%; padding: 12px" onclick="handleAuth()">
+          Login
+        </button>
+      </div>
     </div>
 
-    <header>
-      <div class="logo">✦ Duitku</div>
-      <div class="month-switcher">
-        <button onclick="changeMonth(-1)" title="Previous month">‹</button>
-        <span id="current-month-label"></span>
-        <button onclick="changeMonth(1)" title="Next month">›</button>
+    <!-- ── MAIN APP CONTAINER ── -->
+    <div id="app-container">
+      <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="margin-top: 12px">Syncing...</div>
       </div>
-    </header>
 
-    <nav>
-      <button class="active" onclick="showTab('overview', this)">
-        Overview
-      </button>
-      <button onclick="showTab('log', this)">Log Entry</button>
-      <button onclick="showTab('fixed', this)">Fixed Expenses</button>
-      <button onclick="showTab('summary', this)">Month Summary</button>
-      <button onclick="showTab('trends', this)">Trends</button>
-    </nav>
+      <header>
+        <div class="logo">✦ Duitku</div>
+        <div class="month-switcher">
+          <button onclick="changeMonth(-1)" title="Previous month">‹</button>
+          <span id="current-month-label"></span>
+          <button onclick="changeMonth(1)" title="Next month">›</button>
+        </div>
+        <div class="header-right">
+          <span class="user-email" id="header-user-email"></span>
+          <button class="btn btn-ghost" onclick="handleLogout()" style="padding: 6px 12px; font-size: 11px">Logout</button>
+        </div>
+      </header>
 
-    <main>
-      <!-- ── OVERVIEW ── -->
-      <div id="tab-overview" class="tab-panel active">
-        <div id="overview-month-banner" class="month-banner">
-          <div>
-            <div class="month-banner-label" id="overview-month-title"></div>
-            <div class="month-banner-sub">Overview</div>
+      <nav>
+        <button class="active" onclick="showTab('overview', this)">Overview</button>
+        <button onclick="showTab('log', this)">Log Entry</button>
+        <button onclick="showTab('fixed', this)">Fixed Expenses</button>
+        <button onclick="showTab('summary', this)">Month Summary</button>
+        <button onclick="showTab('trends', this)">Trends</button>
+      </nav>
+
+      <main>
+        <!-- ── OVERVIEW ── -->
+        <div id="tab-overview" class="tab-panel active">
+          <div class="month-banner">
+            <div>
+              <div class="month-banner-label" id="overview-month-title"></div>
+              <div class="month-banner-sub">Overview</div>
+            </div>
+            <div class="month-banner-nav">
+              <button onclick="changeMonth(-1)">‹</button>
+              <button onclick="changeMonth(1)">›</button>
+            </div>
           </div>
-          <div class="month-banner-nav">
-            <button onclick="changeMonth(-1)">‹</button>
-            <button onclick="changeMonth(1)">›</button>
+          <div class="stat-grid" id="stat-cards"></div>
+          <div class="two-col">
+            <div class="card">
+              <div class="card-title">Spending by Category</div>
+              <div id="cat-breakdown"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Budget vs Actual</div>
+              <div class="chart-wrap"><canvas id="budget-chart"></canvas></div>
+            </div>
           </div>
-        </div>
-        <div class="stat-grid" id="stat-cards"></div>
-        <div class="two-col">
           <div class="card">
-            <div class="card-title">Spending by Category</div>
-            <div id="cat-breakdown"></div>
-          </div>
-          <div class="card">
-            <div class="card-title">Budget vs Actual</div>
-            <div class="chart-wrap"><canvas id="budget-chart"></canvas></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="section-header">
             <div class="card-title">Recent Transactions</div>
-          </div>
-          <div id="recent-tx"></div>
-        </div>
-      </div>
-
-      <!-- ── LOG ENTRY ── -->
-      <div id="tab-log" class="tab-panel">
-        <div class="month-banner">
-          <div>
-            <div class="month-banner-label" id="log-month-title"></div>
-            <div class="month-banner-sub">
-              Transaction Log — tap ‹ › to switch months
-            </div>
-          </div>
-          <div class="month-banner-nav">
-            <button onclick="changeMonth(-1)">‹</button>
-            <button onclick="changeMonth(1)">›</button>
+            <div id="recent-tx"></div>
           </div>
         </div>
 
-        <div class="card add-tx-panel" style="border-style: dashed">
-          <div class="card-title" style="margin-bottom: 12px">
-            Add Transaction
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="max-width: 130px">
-              <label>Amount (RM)</label>
-              <input
-                type="number"
-                id="tx-amount"
-                placeholder="0.00"
-                min="0"
-                step="0.01"
-              />
-            </div>
-            <div class="form-group">
-              <label>Category</label>
-              <select id="tx-cat"></select>
-            </div>
-            <div class="form-group" style="max-width: 145px">
-              <label>Date</label>
-              <input type="date" id="tx-date" />
+        <!-- ── LOG ENTRY ── -->
+        <div id="tab-log" class="tab-panel">
+          <div class="month-banner">
+            <div>
+              <div class="month-banner-label" id="log-month-title"></div>
+              <div class="month-banner-sub">Transaction Log</div>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Remarks (optional)</label>
-              <input
-                type="text"
-                id="tx-remark"
-                placeholder="e.g. makan luar, baju raya..."
-                onkeydown="if(event.key==='Enter') addTransaction()"
-              />
-            </div>
-            <button
-              class="btn btn-primary"
-              onclick="addTransaction()"
-              style="height: 38px; margin-top: 18px"
-            >
-              + Add
-            </button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="section-header">
-            <div class="card-title">All Transactions</div>
-            <span
-              id="tx-count"
-              style="font-size: 12px; color: var(--muted)"
-            ></span>
-          </div>
-          <div id="all-tx"></div>
-        </div>
-      </div>
-
-      <!-- ── FIXED EXPENSES ── -->
-      <div id="tab-fixed" class="tab-panel">
-        <div class="month-banner">
-          <div>
-            <div class="month-banner-label" id="fixed-month-title"></div>
-            <div class="month-banner-sub">
-              Fixed Expenses — set per month, copied from last month
-            </div>
-          </div>
-          <div class="month-banner-nav">
-            <button onclick="changeMonth(-1)">‹</button>
-            <button onclick="changeMonth(1)">›</button>
-          </div>
-        </div>
-
-        <div class="two-col">
-          <div class="card">
-            <div class="card-title">Income</div>
+          <div class="card add-tx-panel" style="border-style: dashed">
+            <div class="card-title">Add Transaction</div>
             <div class="form-row">
-              <div class="form-group">
-                <label>Net Salary (RM)</label>
-                <input type="number" id="fix-income" placeholder="3600" />
-              </div>
-              <div class="form-group">
-                <label>Additional Income (RM)</label>
-                <input type="number" id="fix-extra-income" placeholder="0" />
-              </div>
+              <div class="form-group" style="max-width: 130px"><label>Amount (RM)</label><input type="number" id="tx-amount" placeholder="0.00" step="0.01" /></div>
+              <div class="form-group"><label>Category</label><select id="tx-cat"></select></div>
+              <div class="form-group" style="max-width: 145px"><label>Date</label><input type="date" id="tx-date" /></div>
             </div>
             <div class="form-row">
-              <div class="form-group">
-                <label>Savings / Investment (RM)</label>
-                <input type="number" id="fix-savings" placeholder="1100" />
-              </div>
+              <div class="form-group"><label>Remarks</label><input type="text" id="tx-remark" placeholder="e.g. lunch" onkeydown="if(event.key==='Enter') addTransaction()" /></div>
+              <button class="btn btn-primary" onclick="addTransaction()" style="height: 38px; margin-top: 18px">+ Add</button>
             </div>
           </div>
           <div class="card">
-            <div class="card-title">Variable Category Budgets</div>
-            <div id="cat-budget-inputs"></div>
-            <button
-              class="btn btn-ghost"
-              onclick="addCatBudget()"
-              style="margin-top: 8px; width: 100%"
-            >
-              + Add Category
-            </button>
+            <div class="card-title">All Transactions <span id="tx-count" style="font-size: 11px; color: var(--muted); font-family: sans-serif; float: right"></span></div>
+            <div id="all-tx"></div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-title">Fixed Monthly Bills</div>
-          <table class="fix-table">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Budgeted (RM)</th>
-                <th>Actual (RM)</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="fixed-table-body"></tbody>
-          </table>
-          <button
-            class="btn btn-ghost"
-            onclick="addFixedRow()"
-            style="margin-top: 10px; width: 100%"
-          >
-            + Add Row
-          </button>
-          <div
-            style="
-              margin-top: 12px;
-              display: flex;
-              gap: 8px;
-              justify-content: flex-end;
-            "
-          >
-            <button class="btn btn-primary" onclick="saveFixed()">
-              Save This Month
-            </button>
+        <!-- ── FIXED EXPENSES ── -->
+        <div id="tab-fixed" class="tab-panel">
+          <div class="month-banner">
+            <div>
+              <div class="month-banner-label" id="fixed-month-title"></div>
+              <div class="month-banner-sub">Income & Budgets</div>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="card">
+              <div class="card-title">Income</div>
+              <div class="form-row">
+                <div class="form-group"><label>Net Salary</label><input type="number" id="fix-income" /></div>
+                <div class="form-group"><label>Extra</label><input type="number" id="fix-extra-income" /></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Savings Target</label><input type="number" id="fix-savings" /></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Category Budgets</div>
+              <div id="cat-budget-inputs"></div>
+              <button class="btn btn-ghost" onclick="addCatBudget()" style="margin-top: 8px; width: 100%">+ Add Category</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Fixed Bills</div>
+            <table class="fix-table">
+              <thead><tr><th>Item</th><th>Budgeted</th><th>Actual</th><th></th></tr></thead>
+              <tbody id="fixed-table-body"></tbody>
+            </table>
+            <button class="btn btn-ghost" onclick="addFixedRow()" style="margin-top: 10px; width: 100%">+ Add Row</button>
+            <div style="margin-top: 12px; text-align: right"><button class="btn btn-primary" onclick="saveFixed()">Save This Month</button></div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-title">Savings / Investment Breakdown</div>
-          <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px">
-            Break down your savings into specific instruments. The total will
-            show as one line in the summary.
-          </p>
-          <div id="invest-sub-list" class="invest-sub-list"></div>
-          <button
-            class="btn btn-ghost"
-            onclick="addInvestSub()"
-            style="margin-top: 10px; width: 100%"
-          >
-            + Add Item
-          </button>
-          <div class="invest-total-row">
-            <span>Total Savings / Investment</span>
-            <strong id="invest-total-display">RM 0.00</strong>
-          </div>
+        <!-- ── MONTH SUMMARY ── -->
+        <div id="tab-summary" class="tab-panel">
+          <div class="month-banner"><div class="month-banner-label" id="summary-month-title"></div></div>
+          <div id="summary-content"></div>
         </div>
 
-        <div class="data-info">
-          <div class="data-info-icon">💾</div>
-          <div>
-            <strong style="color: var(--text)">Where is my data stored?</strong
-            ><br />
-            Everything is now stored in <strong>Supabase</strong> instead of
-            localStorage. Your data syncs across devices and browsers using your
-            Supabase PostgreSQL database.
-          </div>
+        <!-- ── TRENDS ── -->
+        <div id="tab-trends" class="tab-panel">
+          <div class="card"><div class="card-title">Spending Trends</div><div class="chart-wrap"><canvas id="trend-chart"></canvas></div></div>
+          <div class="card"><div id="trend-table-wrap"></div></div>
         </div>
-      </div>
-
-      <!-- ── MONTH SUMMARY ── -->
-      <div id="tab-summary" class="tab-panel">
-        <div class="month-banner">
-          <div>
-            <div class="month-banner-label" id="summary-month-title"></div>
-            <div class="month-banner-sub">Full Month Summary</div>
-          </div>
-          <div class="month-banner-nav">
-            <button onclick="changeMonth(-1)">‹</button>
-            <button onclick="changeMonth(1)">›</button>
-          </div>
-        </div>
-        <button class="export-btn" onclick="exportSummary()">
-          ↓ Export Month Summary
-        </button>
-        <div id="summary-content"></div>
-      </div>
-
-      <!-- ── TRENDS ── -->
-      <div id="tab-trends" class="tab-panel">
-        <div class="card">
-          <div class="card-title">
-            Month-over-Month Spending (last 6 months)
-          </div>
-          <div class="chart-wrap"><canvas id="trend-chart"></canvas></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Monthly Breakdown</div>
-          <div id="trend-table-wrap"></div>
-        </div>
-      </div>
-    </main>
+      </main>
+    </div>
 
     <div id="toast"></div>
 
     <script>
       /**
-       * SUPABASE SQL SCHEMA (Run this in Supabase SQL Editor):
+       * SUPABASE MULTI-USER SQL SCHEMA:
+       * 
+       * -- Run these in the Supabase SQL Editor. 
+       * -- These tables use auth.uid() to automatically isolate data.
        * 
        * CREATE TABLE monthly_settings (
-       *   month_key TEXT PRIMARY KEY,
+       *   month_key TEXT NOT NULL,
+       *   user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users,
        *   income NUMERIC DEFAULT 0,
        *   extra_income NUMERIC DEFAULT 0,
-       *   savings NUMERIC DEFAULT 0
+       *   savings NUMERIC DEFAULT 0,
+       *   PRIMARY KEY (month_key, user_id)
        * );
+       * ALTER TABLE monthly_settings ENABLE ROW LEVEL SECURITY;
+       * CREATE POLICY "Users only see own settings" ON monthly_settings FOR ALL USING (auth.uid() = user_id);
        * 
        * CREATE TABLE invest_subs (
        *   id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-       *   month_key TEXT,
+       *   month_key TEXT NOT NULL,
+       *   user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users,
        *   name TEXT,
        *   amount NUMERIC DEFAULT 0
        * );
+       * ALTER TABLE invest_subs ENABLE ROW LEVEL SECURITY;
+       * CREATE POLICY "Users only see own invest" ON invest_subs FOR ALL USING (auth.uid() = user_id);
        * 
        * CREATE TABLE fixed_expenses (
        *   id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-       *   month_key TEXT,
+       *   month_key TEXT NOT NULL,
+       *   user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users,
        *   name TEXT,
        *   budgeted NUMERIC DEFAULT 0,
        *   actual NUMERIC
        * );
+       * ALTER TABLE fixed_expenses ENABLE ROW LEVEL SECURITY;
+       * CREATE POLICY "Users only see own fixed" ON fixed_expenses FOR ALL USING (auth.uid() = user_id);
        * 
        * CREATE TABLE categories (
        *   id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-       *   month_key TEXT,
+       *   month_key TEXT NOT NULL,
+       *   user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users,
        *   name TEXT,
        *   budget NUMERIC DEFAULT 0,
        *   sort_order INT
        * );
+       * ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+       * CREATE POLICY "Users only see own categories" ON categories FOR ALL USING (auth.uid() = user_id);
        * 
        * CREATE TABLE transactions (
        *   id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-       *   month_key TEXT,
+       *   month_key TEXT NOT NULL,
+       *   user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users,
        *   amount NUMERIC DEFAULT 0,
        *   category TEXT,
        *   date DATE,
        *   remark TEXT
        * );
+       * ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+       * CREATE POLICY "Users only see own transactions" ON transactions FOR ALL USING (auth.uid() = user_id);
        */
 
       // ─────────────────────────────
-      // CONSTANTS
-      // ─────────────────────────────
-      const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      const CAT_COLORS = {
-        'Eating Out':'#c9a96e','Groceries':'#56c496','Shopping':'#7c6fcd',
-        'Family & Others':'#e8a46c','Transport':'#4a9eff','Self Care':'#f472b6',
-        'Travel':'#34d399','Entertainment':'#fbbf24','Others':'#8a84a0',
-      };
-
-      const DEFAULT_FIXED = [
-        {name:'Petrol',budgeted:150,actual:''},
-        {name:'Bills / Utilities',budgeted:15,actual:''},
-        {name:'Internet / Phone',budgeted:50,actual:''},
-        {name:'Subscriptions',budgeted:5.20,actual:''},
-        {name:'Apartment Rent',budgeted:350,actual:''},
-        {name:'Car Payment',budgeted:434,actual:''},
-        {name:'Others (Tol)',budgeted:25,actual:''},
-      ];
-      const DEFAULT_CATS = [
-        {name:'Eating Out',budget:200},{name:'Groceries',budget:100},
-        {name:'Shopping',budget:200},{name:'Family & Others',budget:300},
-        {name:'Transport',budget:50},{name:'Self Care',budget:50},
-        {name:'Travel',budget:0},{name:'Entertainment',budget:50},{name:'Others',budget:100},
-      ];
-
-      let currentYear, currentMonth, activeTab = 'overview';
-
-      // ─────────────────────────────
-      // SUPABASE SETUP
+      // SUPABASE CONFIG
       // ─────────────────────────────
       const SUPABASE_URL = 'https://yywcjlbcpjlosegvyfwt.supabase.co';
       const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5d2NqbGJjcGpsb3NlZ3Z5Znd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2ODMyOTcsImV4cCI6MjA5NTI1OTI5N30.-9Jeh8Ufth2OCRPW3_rmoQxaWZE9MoyfaqZauafpP1Q';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      // ─────────────────────────────
+      // AUTH LOGIC
+      // ─────────────────────────────
+      let currentAuthMode = 'login';
 
+      function toggleAuthTab(mode) {
+        currentAuthMode = mode;
+        document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+        document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+        document.getElementById('auth-btn').textContent = mode === 'login' ? 'Login' : 'Sign Up';
+      }
+
+      async function handleAuth() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        if (!email || !password) return toast('Please enter email and password', true);
+
+        toggleLoading(true);
+        const { data, error } = currentAuthMode === 'login' 
+          ? await supabase.auth.signInWithPassword({ email, password })
+          : await supabase.auth.signUp({ email, password });
+
+        if (error) {
+          toast(error.message, true);
+          toggleLoading(false);
+        } else {
+          toast(currentAuthMode === 'login' ? 'Logged in!' : 'Sign up successful! Please check your email.');
+          // UI will auto-switch via onAuthStateChange listener
+        }
+      }
+
+      async function handleLogout() {
+        await supabase.auth.signOut();
+        window.location.reload(); // Simplest way to clear state
+      }
+
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (session) {
+          document.getElementById('auth-screen').style.display = 'none';
+          document.getElementById('app-container').style.display = 'block';
+          document.getElementById('header-user-email').textContent = session.user.email;
+          initApp();
+        } else {
+          document.getElementById('auth-screen').style.display = 'flex';
+          document.getElementById('app-container').style.display = 'none';
+        }
+      });
+
+      // ─────────────────────────────
+      // CORE APP LOGIC
+      // ─────────────────────────────
+      const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const CAT_COLORS = { 'Eating Out':'#c9a96e','Groceries':'#56c496','Shopping':'#7c6fcd','Family & Others':'#e8a46c','Transport':'#4a9eff','Self Care':'#f472b6','Travel':'#34d399','Entertainment':'#fbbf24','Others':'#8a84a0' };
+      const DEFAULT_FIXED = [ {name:'Petrol',budgeted:150,actual:''}, {name:'Bills',budgeted:50,actual:''}, {name:'Rent',budgeted:400,actual:''} ];
+      const DEFAULT_CATS = [ {name:'Eating Out',budget:200},{name:'Groceries',budget:100},{name:'Shopping',budget:200} ];
+
+      let currentYear, currentMonth, activeTab = 'overview';
       const monthCache = {};
 
-      function monthKey(y, m) {
-        return `${y}-${String(m).padStart(2,'0')}`;
-      }
-
-      function mk() {
-        return monthKey(currentYear, currentMonth);
-      }
-
-      function toggleLoading(show) {
-        document.getElementById('loading-overlay').classList.toggle('active', show);
-      }
+      function monthKey(y, m) { return `${y}-${String(m).padStart(2,'0')}`; }
+      function mk() { return monthKey(currentYear, currentMonth); }
 
       async function getMonthData(key) {
         if (monthCache[key]) return monthCache[key];
         
-        const [
-          settingsRes,
-          investRes,
-          fixedRes,
-          catsRes,
-          txRes
-        ] = await Promise.all([
-          supabaseClient.from('monthly_settings').select('*').eq('month_key', key).single(),
-          supabaseClient.from('invest_subs').select('*').eq('month_key', key),
-          supabaseClient.from('fixed_expenses').select('*').eq('month_key', key),
-          supabaseClient.from('categories').select('*').eq('month_key', key).order('sort_order'),
-          supabaseClient.from('transactions').select('*').eq('month_key', key).order('date', { ascending: true })
+        const [sett, inv, fix, cats, txs] = await Promise.all([
+          supabase.from('monthly_settings').select('*').eq('month_key', key).single(),
+          supabase.from('invest_subs').select('*').eq('month_key', key),
+          supabase.from('fixed_expenses').select('*').eq('month_key', key),
+          supabase.from('categories').select('*').eq('month_key', key).order('sort_order'),
+          supabase.from('transactions').select('*').eq('month_key', key).order('date', { ascending: true })
         ]);
 
-        const hasData = settingsRes.data || (investRes.data && investRes.data.length) || (fixedRes.data && fixedRes.data.length) || (catsRes.data && catsRes.data.length);
-
-        if (!hasData) {
-          // If no data, return defaults (could potentially copy from previous month if we wanted)
-          const defaults = {
-            income: 3600,
-            extraIncome: 0,
-            savings: 1100,
-            investSubs: [
-              { name: 'KWSP', amount: 200 },
-              { name: 'ASB', amount: 300 }
-            ],
-            fixedExpenses: JSON.parse(JSON.stringify(DEFAULT_FIXED)),
-            categories: JSON.parse(JSON.stringify(DEFAULT_CATS)),
-            transactions: []
-          };
-          monthCache[key] = defaults;
-          return defaults;
+        if (!sett.data && !cats.data?.length) {
+          const def = { income: 3600, extraIncome: 0, savings: 1100, investSubs: [], fixedExpenses: JSON.parse(JSON.stringify(DEFAULT_FIXED)), categories: JSON.parse(JSON.stringify(DEFAULT_CATS)), transactions: [] };
+          monthCache[key] = def;
+          return def;
         }
 
         const data = {
-          income: Number(settingsRes.data?.income || 0),
-          extraIncome: Number(settingsRes.data?.extra_income || 0),
-          savings: Number(settingsRes.data?.savings || 0),
-          investSubs: (investRes.data || []).map(r => ({ id: r.id, name: r.name, amount: Number(r.amount || 0) })),
-          fixedExpenses: (fixedRes.data || []).map(r => ({ id: r.id, name: r.name, budgeted: Number(r.budgeted || 0), actual: r.actual !== null ? Number(r.actual) : '' })),
-          categories: (catsRes.data || []).map(r => ({ id: r.id, name: r.name, budget: Number(r.budget || 0) })),
-          transactions: (txRes.data || []).map(r => ({ id: r.id, amount: Number(r.amount || 0), cat: r.category, date: r.date, remark: r.remark || '' }))
+          income: Number(sett.data?.income || 0),
+          extraIncome: Number(sett.data?.extra_income || 0),
+          savings: Number(sett.data?.savings || 0),
+          investSubs: (inv.data || []).map(r => ({ id: r.id, name: r.name, amount: Number(r.amount || 0) })),
+          fixedExpenses: (fix.data || []).map(r => ({ id: r.id, name: r.name, budgeted: Number(r.budgeted || 0), actual: r.actual !== null ? Number(r.actual) : '' })),
+          categories: (cats.data || []).map(r => ({ id: r.id, name: r.name, budget: Number(r.budget || 0) })),
+          transactions: (txs.data || []).map(r => ({ id: r.id, amount: Number(r.amount || 0), cat: r.category, date: r.date, remark: r.remark || '' }))
         };
-
         monthCache[key] = data;
         return data;
-      }
-
-      async function getData() {
-        return await getMonthData(mk());
       }
 
       async function saveMonthData(data) {
         const key = mk();
         monthCache[key] = data;
+        
+        await supabase.from('monthly_settings').upsert({ month_key: key, income: data.income, extra_income: data.extraIncome, savings: data.savings }, { onConflict: 'month_key,user_id' });
+        
+        await supabase.from('invest_subs').delete().eq('month_key', key);
+        if (data.investSubs?.length) await supabase.from('invest_subs').insert(data.investSubs.map(r => ({ month_key: key, name: r.name, amount: r.amount })));
+        
+        await supabase.from('fixed_expenses').delete().eq('month_key', key);
+        if (data.fixedExpenses?.length) await supabase.from('fixed_expenses').insert(data.fixedExpenses.map(r => ({ month_key: key, name: r.name, budgeted: r.budgeted, actual: r.actual !== '' ? Number(r.actual) : null })));
 
-        // 1. Save Settings
-        await supabaseClient.from('monthly_settings').upsert({
-          month_key: key,
-          income: data.income || 0,
-          extra_income: data.extraIncome || 0,
-          savings: data.savings || 0
-        }, { onConflict: 'month_key' });
+        await supabase.from('categories').delete().eq('month_key', key);
+        if (data.categories?.length) await supabase.from('categories').insert(data.categories.map((r, i) => ({ month_key: key, name: r.name, budget: r.budget, sort_order: i })));
 
-        // 2. Save Invest Subs (Delete and re-insert for simplicity in this demo)
-        await supabaseClient.from('invest_subs').delete().eq('month_key', key);
-        if (data.investSubs?.length) {
-          await supabaseClient.from('invest_subs').insert(data.investSubs.map(r => ({ month_key: key, name: r.name, amount: r.amount || 0 })));
-        }
-
-        // 3. Save Fixed Expenses
-        await supabaseClient.from('fixed_expenses').delete().eq('month_key', key);
-        if (data.fixedExpenses?.length) {
-          await supabaseClient.from('fixed_expenses').insert(data.fixedExpenses.map(r => ({ 
-            month_key: key, 
-            name: r.name, 
-            budgeted: r.budgeted || 0, 
-            actual: r.actual !== '' ? Number(r.actual) : null 
-          })));
-        }
-
-        // 4. Save Categories
-        await supabaseClient.from('categories').delete().eq('month_key', key);
-        if (data.categories?.length) {
-          await supabaseClient.from('categories').insert(data.categories.map((r, i) => ({ 
-            month_key: key, 
-            name: r.name, 
-            budget: r.budget || 0, 
-            sort_order: i 
-          })));
-        }
-
-        // 5. Save Transactions
-        await supabaseClient.from('transactions').delete().eq('month_key', key);
-        if (data.transactions?.length) {
-          await supabaseClient.from('transactions').insert(data.transactions.map(r => ({ 
-            month_key: key, 
-            amount: r.amount || 0, 
-            category: r.cat, 
-            date: r.date, 
-            remark: r.remark || '' 
-          })));
-        }
+        await supabase.from('transactions').delete().eq('month_key', key);
+        if (data.transactions?.length) await supabase.from('transactions').insert(data.transactions.map(r => ({ month_key: key, amount: r.amount, category: r.cat, date: r.date, remark: r.remark })));
       }
 
-      // ─────────────────────────────
-      // MONTH NAV
-      // ─────────────────────────────
-      function initMonth() {
+      function initApp() {
         const now = new Date();
         currentYear = now.getFullYear();
         currentMonth = now.getMonth() + 1;
+        updateMonthLabel();
+        renderCurrentTab();
       }
 
       async function changeMonth(dir) {
@@ -1342,7 +771,7 @@
         if (currentMonth > 12) { currentMonth = 1; currentYear++; }
         if (currentMonth < 1) { currentMonth = 12; currentYear--; }
         updateMonthLabel();
-        await renderCurrentTab();
+        renderCurrentTab();
       }
 
       function updateMonthLabel() {
@@ -1354,610 +783,167 @@
         });
       }
 
-      // ─────────────────────────────
-      // TABS
-      // ─────────────────────────────
       async function showTab(name, btn) {
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(`tab-${name}`).classList.add('active');
         if (btn) btn.classList.add('active');
         activeTab = name;
-        await renderCurrentTab();
+        renderCurrentTab();
       }
 
       async function renderCurrentTab() {
         toggleLoading(true);
-        try {
-          if (activeTab === 'overview') await renderOverview();
-          else if (activeTab === 'log') await renderLog();
-          else if (activeTab === 'fixed') await renderFixed();
-          else if (activeTab === 'summary') await renderSummary();
-          else if (activeTab === 'trends') await renderTrends();
-        } catch (err) {
-          console.error(err);
-          toast('Error loading data', true);
-        } finally {
-          toggleLoading(false);
-        }
+        if (activeTab === 'overview') await renderOverview();
+        else if (activeTab === 'log') await renderLog();
+        else if (activeTab === 'fixed') await renderFixed();
+        else if (activeTab === 'summary') await renderSummary();
+        else if (activeTab === 'trends') await renderTrends();
+        toggleLoading(false);
       }
 
-      // ─────────────────────────────
-      // HELPERS
-      // ─────────────────────────────
-      function fmt(n) { return 'RM ' + Number(n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
-
-      function catColor(name) {
-        for (const [k,v] of Object.entries(CAT_COLORS))
-          if (name && name.toLowerCase().includes(k.toLowerCase())) return v;
-        return '#8a84a0';
-      }
-
+      function fmt(n) { return 'RM ' + Number(n||0).toFixed(2); }
+      function catColor(name) { for (const [k,v] of Object.entries(CAT_COLORS)) if (name && name.toLowerCase().includes(k.toLowerCase())) return v; return '#8a84a0'; }
+      function toggleLoading(show) { document.getElementById('loading-overlay').classList.toggle('active', show); }
       function toast(msg, isErr) {
         const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.className = isErr ? 'error' : '';
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2500);
+        t.textContent = msg; t.className = isErr ? 'error' : ''; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
       }
 
-      function txsByCategory(data) {
-        const map = {};
-        data.categories.forEach(c => { map[c.name] = 0; });
-        data.transactions.forEach(tx => {
-          if (!map[tx.cat]) map[tx.cat] = 0;
-          map[tx.cat] += tx.amount;
-        });
-        return map;
-      }
-
-      function totalFixed(data) {
-        return data.fixedExpenses.reduce((s,r) => s + (parseFloat(r.actual)||parseFloat(r.budgeted)||0), 0);
-      }
-      function totalSpent(data) { return data.transactions.reduce((s,tx) => s + tx.amount, 0); }
-      function totalBudgetCats(data) { return data.categories.reduce((s,c) => s + (parseFloat(c.budget)||0), 0); }
-
-      // ─────────────────────────────
-      // OVERVIEW
-      // ─────────────────────────────
-      let budgetChart = null;
-
+      // Render functions adapted from previous versions...
       async function renderOverview() {
-        const data = await getData();
+        const data = await getMonthData(mk());
         const totalInc = (data.income||0) + (data.extraIncome||0);
-        const fixTotal = totalFixed(data);
-        const spentTotal = totalSpent(data);
+        const spentTotal = data.transactions.reduce((s,tx) => s + tx.amount, 0);
+        const fixTotal = data.fixedExpenses.reduce((s,r) => s + (parseFloat(r.actual)||parseFloat(r.budgeted)||0), 0);
         const savedActual = data.savings||0;
         const remaining = totalInc - fixTotal - spentTotal - savedActual;
-        const spendBudget = totalBudgetCats(data);
 
-        const cards = [
-          {label:'Total Income', value:fmt(totalInc), sub:`Salary ${fmt(data.income)} + Extra ${fmt(data.extraIncome)}`, cls:'income', pct:null},
-          {label:'Fixed Expenses', value:fmt(fixTotal), sub:`of ${fmt(data.fixedExpenses.reduce((s,r)=>s+(parseFloat(r.budgeted)||0),0))} budgeted`, cls:'fixed', pct:totalInc > 0 ? fixTotal/totalInc : 0},
-          {label:'Variable Spending', value:fmt(spentTotal), sub:`of ${fmt(spendBudget)} budget`, cls:'spent', pct:spendBudget>0?spentTotal/spendBudget:0},
-          {label:'Savings', value:fmt(savedActual), sub:`${totalInc?((savedActual/totalInc)*100).toFixed(0):0}% of income`, cls:'savings', pct:totalInc>0?savedActual/totalInc:0},
-          {label:'Remaining', value:fmt(Math.max(remaining,0)), sub:remaining<0?'⚠ Over budget':'Available this month', cls:'balance', pct:null},
-        ];
-
-        document.getElementById('stat-cards').innerHTML = cards.map(c => `
-          <div class="stat-card ${c.cls}">
-            <div class="stat-label">${c.label}</div>
-            <div class="stat-value" style="${c.label==='Remaining'&&remaining<0?'color:var(--red)':''}">${c.value}</div>
-            <div class="stat-sub">${c.sub}</div>
-            ${c.pct!=null?`<div class="progress-wrap"><div class="progress-bar" style="width:${Math.min(c.pct*100,100)}%;background:${c.pct>1?'var(--red)':'var(--accent)'}"></div></div>`:''}
-          </div>`).join('');
-
-        const catMap = txsByCategory(data);
-        document.getElementById('cat-breakdown').innerHTML = !data.categories.length
-          ? `<div class="empty"><div class="empty-icon">📂</div>No categories yet.</div>`
-          : data.categories.map(c => {
-              const spent = catMap[c.name]||0, budget = parseFloat(c.budget)||0;
-              const pct = budget>0 ? Math.min(spent/budget,1) : (spent>0?1:0);
-              const over = budget>0 && spent>budget;
-              return `<div class="cat-row">
-                <div class="cat-label">
-                  <span style="width:8px;height:8px;border-radius:50%;background:${catColor(c.name)};flex-shrink:0;display:inline-block"></span>
-                  <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</span>
-                  ${over?'<span class="badge badge-over">over</span>':''}
-                </div>
-                <div class="cat-bar-wrap"><div class="cat-bar" style="width:${pct*100}%;background:${over?'var(--red)':catColor(c.name)}"></div></div>
-                <div class="cat-amount">${fmt(spent)}</div>
-              </div>`;
-            }).join('');
-
-        if (budgetChart) budgetChart.destroy();
-        const ctx = document.getElementById('budget-chart').getContext('2d');
-        budgetChart = new Chart(ctx, {
-          type:'bar',
-          data:{
-            labels: data.categories.map(c=>c.name),
-            datasets:[
-              {label:'Budget', data:data.categories.map(c=>parseFloat(c.budget)||0), backgroundColor:'rgba(201,169,110,0.25)', borderColor:'#c9a96e', borderWidth:1.5, borderRadius:4},
-              {label:'Actual', data:data.categories.map(c=>catMap[c.name]||0),
-                backgroundColor: data.categories.map((c,i)=>(catMap[c.name]||0)>(parseFloat(c.budget)||0)?'rgba(232,108,108,0.7)':'rgba(86,196,150,0.7)'),
-                borderColor: data.categories.map((c,i)=>(catMap[c.name]||0)>(parseFloat(c.budget)||0)?'#e86c6c':'#56c496'),
-                borderWidth:1.5, borderRadius:4},
-            ]
-          },
-          options:{
-            responsive:true, maintainAspectRatio:false,
-            plugins:{legend:{labels:{color:'#8a84a0',font:{size:11}}}},
-            scales:{
-              x:{ticks:{color:'#8a84a0',font:{size:9},maxRotation:35},grid:{color:'rgba(46,42,56,0.5)'}},
-              y:{ticks:{color:'#8a84a0',font:{size:10},callback:v=>'RM'+v},grid:{color:'rgba(46,42,56,0.5)'}}
-            }
-          }
-        });
-
-        const recent = [...(data.transactions||[])].reverse().slice(0,5);
-        document.getElementById('recent-tx').innerHTML = !recent.length
-          ? `<div class="empty"><div class="empty-icon">🧾</div>No transactions this month yet.</div>`
-          : `<div class="tx-list">${recent.map(tx => txHtml(tx, null, true)).join('')}</div>`;
+        document.getElementById('stat-cards').innerHTML = `
+          <div class="stat-card income"><div class="stat-label">Income</div><div class="stat-value">${fmt(totalInc)}</div></div>
+          <div class="stat-card spent"><div class="stat-label">Spent</div><div class="stat-value">${fmt(spentTotal)}</div></div>
+          <div class="stat-card balance"><div class="stat-label">Remaining</div><div class="stat-value">${fmt(remaining)}</div></div>
+        `;
+        
+        document.getElementById('recent-tx').innerHTML = data.transactions.length ? 
+          `<div class="tx-list">${data.transactions.slice(-5).reverse().map(tx => `
+            <div class="tx-item">
+              <span class="tx-cat-dot" style="background:${catColor(tx.cat)}"></span>
+              <div class="tx-info"><div class="tx-cat-badge">${tx.cat}</div><div style="font-size:11px;color:var(--muted)">${tx.date}</div></div>
+              <div class="tx-amount">− ${fmt(tx.amount)}</div>
+            </div>`).join('')}</div>` : '<div style="text-align:center;color:var(--muted);padding:20px">No transactions yet</div>';
       }
 
-      function txHtml(tx, idx, readOnly) {
-        const col = catColor(tx.cat);
-        return `
-        <div class="tx-item" id="txrow-${tx.id}">
-          <span class="tx-cat-dot" style="background:${col}"></span>
-          <div class="tx-info">
-            <div class="tx-top">
-              <span class="tx-cat-badge">${tx.cat}</span>
-              <span class="tx-date">${tx.date}</span>
-            </div>
-            ${tx.remark?`<div class="tx-remark">${tx.remark}</div>`:''}
-          </div>
-          <div class="tx-amount">− ${fmt(tx.amount)}</div>
-          ${!readOnly?`<div class="tx-actions">
-            <button class="btn btn-edit" onclick="startEdit(${tx.id})" title="Edit">✎</button>
-            <button class="btn btn-danger" onclick="deleteTx(${tx.id})" title="Delete">✕</button>
-          </div>`:''}
-        </div>`;
-      }
-
-      // ─────────────────────────────
-      // LOG ENTRY
-      // ─────────────────────────────
       async function renderLog() {
-        const data = await getData();
-        const sel = document.getElementById('tx-cat');
-        sel.innerHTML = data.categories.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
-        const today = new Date();
-        const isCurrentMonth = currentYear===today.getFullYear() && currentMonth===(today.getMonth()+1);
-        document.getElementById('tx-date').value = isCurrentMonth
-          ? today.toISOString().split('T')[0]
-          : `${currentYear}-${String(currentMonth).padStart(2,'0')}-01`;
-
-        const txs = [...(data.transactions||[])].reverse();
-        document.getElementById('tx-count').textContent = `${txs.length} transaction${txs.length!==1?'s':''}`;
-        document.getElementById('all-tx').innerHTML = !txs.length
-          ? `<div class="empty"><div class="empty-icon">📝</div>No transactions yet. Add your first one above!</div>`
-          : `<div class="tx-list">${txs.map(tx => txHtml(tx, null, false)).join('')}</div>`;
+        const data = await getMonthData(mk());
+        document.getElementById('tx-cat').innerHTML = data.categories.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+        document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('all-tx').innerHTML = `<div class="tx-list">${data.transactions.slice().reverse().map((tx,i) => `
+          <div class="tx-item">
+            <span class="tx-cat-dot" style="background:${catColor(tx.cat)}"></span>
+            <div class="tx-info"><div class="tx-cat-badge">${tx.cat}</div><div style="font-size:11px;color:var(--muted)">${tx.date}</div></div>
+            <div class="tx-amount">− ${fmt(tx.amount)}</div>
+            <button class="btn btn-danger" onclick="deleteTx(${data.transactions.length-1-i})">✕</button>
+          </div>`).join('')}</div>`;
       }
 
       async function addTransaction() {
         const amount = parseFloat(document.getElementById('tx-amount').value);
         const cat = document.getElementById('tx-cat').value;
         const date = document.getElementById('tx-date').value;
-        const remark = document.getElementById('tx-remark').value.trim();
-        if (!amount || amount <= 0) { toast('Enter a valid amount', true); return; }
-        if (!cat) { toast('Select a category', true); return; }
-        const data = await getData();
-        data.transactions.push({amount, cat, date, remark, id: Date.now()});
+        const remark = document.getElementById('tx-remark').value;
+        if (!amount || !cat) return toast('Invalid data', true);
+        const data = await getMonthData(mk());
+        data.transactions.push({ amount, cat, date, remark, id: Date.now() });
         await saveMonthData(data);
-        document.getElementById('tx-amount').value = '';
-        document.getElementById('tx-remark').value = '';
-        toast('✓ Transaction added');
-        await renderLog();
+        renderLog();
       }
 
-      async function deleteTx(id) {
-        const data = await getData();
-        data.transactions = data.transactions.filter(tx => tx.id !== id);
+      async function deleteTx(idx) {
+        const data = await getMonthData(mk());
+        data.transactions.splice(idx, 1);
         await saveMonthData(data);
-        toast('Transaction removed');
-        await renderLog();
+        renderLog();
       }
 
-      async function startEdit(id) {
-        const data = await getData();
-        const tx = data.transactions.find(t => t.id === id);
-        if (!tx) return;
-
-        document.querySelectorAll('.tx-edit-row').forEach(r => r.remove());
-        const row = document.getElementById(`txrow-${id}`);
-        if (!row) return;
-
-        row.classList.add('editing');
-        const catOptions = data.categories.map(c=>`<option value="${c.name}"${c.name===tx.cat?' selected':''}>${c.name}</option>`).join('');
-
-        const editRow = document.createElement('div');
-        editRow.className = 'tx-edit-row';
-        editRow.id = `txedit-${id}`;
-        editRow.innerHTML = `
-          <div class="form-group" style="max-width:120px">
-            <label>Amount</label>
-            <input type="number" id="edit-amount-${id}" value="${tx.amount}" step="0.01">
-          </div>
-          <div class="form-group">
-            <label>Category</label>
-            <select id="edit-cat-${id}">${catOptions}</select>
-          </div>
-          <div class="form-group" style="max-width:145px">
-            <label>Date</label>
-            <input type="date" id="edit-date-${id}" value="${tx.date}">
-          </div>
-          <div class="form-group">
-            <label>Remarks</label>
-            <input type="text" id="edit-remark-${id}" value="${tx.remark||''}">
-          </div>
-          <div style="display:flex;gap:6px;margin-top:18px;flex-shrink:0">
-            <button class="btn btn-primary" onclick="saveEdit(${id})" style="padding:7px 14px">Save</button>
-            <button class="btn btn-ghost" onclick="cancelEdit(${id})" style="padding:7px 12px">Cancel</button>
-          </div>`;
-
-        row.insertAdjacentElement('afterend', editRow);
-      }
-
-      async function saveEdit(id) {
-        const amount = parseFloat(document.getElementById(`edit-amount-${id}`).value);
-        const cat = document.getElementById(`edit-cat-${id}`).value;
-        const date = document.getElementById(`edit-date-${id}`).value;
-        const remark = document.getElementById(`edit-remark-${id}`).value.trim();
-        if (!amount || amount <= 0) { toast('Enter a valid amount', true); return; }
-        const data = await getData();
-        const tx = data.transactions.find(t => t.id === id);
-        if (tx) { tx.amount = amount; tx.cat = cat; tx.date = date; tx.remark = remark; }
-        await saveMonthData(data);
-        toast('✓ Transaction updated');
-        await renderLog();
-      }
-
-      function cancelEdit(id) {
-        document.getElementById(`txedit-${id}`)?.remove();
-        document.getElementById(`txrow-${id}`)?.classList.remove('editing');
-      }
-
-      // ─────────────────────────────
-      // FIXED EXPENSES
-      // ─────────────────────────────
       async function renderFixed() {
-        const data = await getData();
-        document.getElementById('fix-income').value = data.income||'';
-        document.getElementById('fix-extra-income').value = data.extraIncome||'';
-        document.getElementById('fix-savings').value = data.savings||'';
-
+        const data = await getMonthData(mk());
+        document.getElementById('fix-income').value = data.income;
+        document.getElementById('fix-extra-income').value = data.extraIncome;
+        document.getElementById('fix-savings').value = data.savings;
         document.getElementById('fixed-table-body').innerHTML = data.fixedExpenses.map((r,i) => `
           <tr>
             <td><input value="${r.name}" onchange="updateFixedLocal(${i},'name',this.value)"></td>
-            <td><input type="number" value="${r.budgeted}" style="width:90px" onchange="updateFixedLocal(${i},'budgeted',this.value)"></td>
-            <td><input type="number" value="${r.actual}" placeholder="same as budget" style="width:110px" onchange="updateFixedLocal(${i},'actual',this.value)"></td>
+            <td><input type="number" value="${r.budgeted}" onchange="updateFixedLocal(${i},'budgeted',this.value)"></td>
+            <td><input type="number" value="${r.actual}" onchange="updateFixedLocal(${i},'actual',this.value)"></td>
             <td><button class="btn btn-danger" onclick="removeFixedRow(${i})">✕</button></td>
           </tr>`).join('');
-
         document.getElementById('cat-budget-inputs').innerHTML = data.categories.map((c,i) => `
-          <div class="form-row" style="margin-bottom:6px">
-            <div class="form-group">
-              <input value="${c.name}" onchange="updateCatLocal(${i},'name',this.value)" placeholder="Category">
-            </div>
-            <div class="form-group" style="max-width:110px">
-              <input type="number" value="${c.budget}" onchange="updateCatLocal(${i},'budget',this.value)" placeholder="Budget">
-            </div>
-            <button class="btn btn-danger" onclick="removeCat(${i})" style="margin-top:4px">✕</button>
+          <div class="form-row">
+            <input value="${c.name}" onchange="updateCatLocal(${i},'name',this.value)">
+            <input type="number" value="${c.budget}" onchange="updateCatLocal(${i},'budget',this.value)">
+            <button class="btn btn-danger" onclick="removeCat(${i})">✕</button>
           </div>`).join('');
-
-        renderInvestSubs(data);
       }
 
-      function renderInvestSubs(data) {
-        if (!data.investSubs) data.investSubs = [];
-        const total = data.investSubs.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
-        document.getElementById('invest-sub-list').innerHTML = data.investSubs.map((r,i) => `
-          <div class="invest-sub-row">
-            <div class="form-group">
-              <input value="${r.name}" placeholder="e.g. KWSP" onchange="updateInvestSubLocal(${i},'name',this.value)">
-            </div>
-            <div class="form-group" style="max-width:130px">
-              <input type="number" value="${r.amount||''}" placeholder="Amount" onchange="updateInvestSubLocal(${i},'amount',this.value)">
-            </div>
-            <button class="btn btn-danger" onclick="removeInvestSub(${i})">✕</button>
-          </div>`).join('');
-        document.getElementById('invest-total-display').textContent = fmt(total);
-        document.getElementById('fix-savings').value = total || (data.savings||'');
-      }
-
-      async function updateInvestSubLocal(i, key, val) {
-        const data = await getData();
-        if (!data.investSubs) data.investSubs = [];
-        data.investSubs[i][key] = key === 'amount' ? parseFloat(val)||0 : val;
-        data.savings = data.investSubs.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
-        renderInvestSubs(data);
-      }
-
-      async function addInvestSub() {
-        const data = await getData();
-        if (!data.investSubs) data.investSubs = [];
-        data.investSubs.push({name:'', amount:0});
-        renderInvestSubs(data);
-      }
-
-      async function removeInvestSub(i) {
-        const data = await getData();
-        data.investSubs.splice(i, 1);
-        data.savings = data.investSubs.reduce((s,r) => s + (parseFloat(r.amount)||0), 0);
-        renderInvestSubs(data);
-      }
-
-      async function updateFixedLocal(i, key, val) {
-        const data = await getData(); 
-        data.fixedExpenses[i][key] = (key === 'budgeted' || key === 'actual') ? parseFloat(val) : val;
-      }
-      async function updateCatLocal(i, key, val) {
-        const data = await getData(); 
-        data.categories[i][key] = key === 'budget' ? parseFloat(val)||0 : val;
-      }
-      async function addFixedRow() {
-        const data = await getData(); 
-        data.fixedExpenses.push({name:'New Item',budgeted:0,actual:''}); 
-        renderFixed();
-      }
-      async function removeFixedRow(i) {
-        const data = await getData(); 
-        data.fixedExpenses.splice(i,1); 
-        renderFixed();
-      }
-      async function addCatBudget() {
-        const data = await getData(); 
-        data.categories.push({name:'New Category',budget:0}); 
-        renderFixed();
-      }
-      async function removeCat(i) {
-        const data = await getData(); 
-        data.categories.splice(i,1); 
-        renderFixed();
-      }
-      async function saveFixed() {
-        const data = await getData();
-        data.income = parseFloat(document.getElementById('fix-income').value)||0;
-        data.extraIncome = parseFloat(document.getElementById('fix-extra-income').value)||0;
-        if (!data.investSubs || data.investSubs.length === 0) {
-          data.savings = parseFloat(document.getElementById('fix-savings').value)||0;
-        }
-        await saveMonthData(data);
-        toast('✓ Saved for ' + MONTHS[currentMonth-1] + ' ' + currentYear);
-      }
-
-      // ─────────────────────────────
-      // MONTH SUMMARY
-      // ─────────────────────────────
-      let activeChips = new Set();
-
-      function toggleChip(catName) {
-        if (catName === '__all__') {
-          activeChips.clear();
-        } else {
-          if (activeChips.has(catName)) activeChips.delete(catName);
-          else activeChips.add(catName);
-        }
-        renderSummaryTransactions();
-        updateChipUI();
-      }
-
-      function updateChipUI() {
-        document.querySelectorAll('.chip').forEach(chip => {
-          const val = chip.dataset.cat;
-          if (val === '__all__') chip.classList.toggle('active', activeChips.size === 0);
-          else chip.classList.toggle('active', activeChips.has(val));
-        });
-      }
-
-      async function renderSummaryTransactions() {
-        const data = await getData();
-        const txs = [...data.transactions].reverse();
-        const filtered = activeChips.size === 0 ? txs : txs.filter(tx => activeChips.has(tx.cat));
-        const filteredTotal = filtered.reduce((s,tx) => s + tx.amount, 0);
-
-        const wrap = document.getElementById('summary-tx-section');
-        if (!wrap) return;
-
-        const label = activeChips.size === 0
-          ? `Showing all ${filtered.length} transactions`
-          : `${filtered.length} transaction${filtered.length!==1?'s':''} in: ${[...activeChips].join(', ')} — Total: ${fmt(filteredTotal)}`;
-
-        wrap.innerHTML = `
-          <div class="chip-result-label">${label}</div>
-          ${!filtered.length
-            ? `<div class="empty"><div class="empty-icon">🔍</div>No transactions for selected categories.</div>`
-            : `<div class="tx-list">${filtered.map(tx => txHtml(tx, null, true)).join('')}</div>`}`;
+      function updateFixedLocal(i,k,v) { monthCache[mk()].fixedExpenses[i][k] = (k==='name'?v:parseFloat(v)||0); }
+      function updateCatLocal(i,k,v) { monthCache[mk()].categories[i][k] = (k==='name'?v:parseFloat(v)||0); }
+      function addFixedRow() { monthCache[mk()].fixedExpenses.push({name:'New',budgeted:0,actual:''}); renderFixed(); }
+      function removeFixedRow(i) { monthCache[mk()].fixedExpenses.splice(i,1); renderFixed(); }
+      function addCatBudget() { monthCache[mk()].categories.push({name:'New',budget:0}); renderFixed(); }
+      function removeCat(i) { monthCache[mk()].categories.splice(i,1); renderFixed(); }
+      async function saveFixed() { 
+        const d = monthCache[mk()];
+        d.income = parseFloat(document.getElementById('fix-income').value)||0;
+        d.extraIncome = parseFloat(document.getElementById('fix-extra-income').value)||0;
+        d.savings = parseFloat(document.getElementById('fix-savings').value)||0;
+        await saveMonthData(d);
+        toast('Settings Saved');
       }
 
       async function renderSummary() {
-        const data = await getData();
+        const data = await getMonthData(mk());
         const totalInc = (data.income||0)+(data.extraIncome||0);
-        const fixTotal = totalFixed(data);
-        const spentTotal = totalSpent(data);
+        const spentTotal = data.transactions.reduce((s,tx) => s + tx.amount, 0);
+        const fixTotal = data.fixedExpenses.reduce((s,r) => s + (parseFloat(r.actual)||parseFloat(r.budgeted)||0), 0);
         const savedActual = data.savings||0;
         const remaining = totalInc - fixTotal - spentTotal - savedActual;
-        const catMap = txsByCategory(data);
-
-        const investSubs = data.investSubs && data.investSubs.length
-          ? data.investSubs.filter(r => r.name || r.amount)
-          : null;
-        const investDisplay = investSubs
-          ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:10px">
-              ${investSubs.map(r=>`<span style="font-size:12px;color:var(--muted);background:var(--surface2);padding:3px 10px;border-radius:99px;border:1px solid var(--border)">${r.name}: <span style="color:var(--accent2)">${fmt(r.amount)}</span></span>`).join('')}
-             </div>`
-          : '';
 
         document.getElementById('summary-content').innerHTML = `
-          <div class="summary-totals">
-            <div class="summary-total-card"><div class="s-label">Total Income</div><div class="s-val">${fmt(totalInc)}</div></div>
-            <div class="summary-total-card"><div class="s-label">Fixed Expenses</div><div class="s-val neg">${fmt(fixTotal)}</div></div>
-            <div class="summary-total-card"><div class="s-label">Variable Spending</div><div class="s-val neg">${fmt(spentTotal)}</div></div>
-            <div class="summary-total-card"><div class="s-label">Remaining</div><div class="s-val ${remaining>=0?'pos':'neg'}">${fmt(remaining)}</div></div>
-          </div>
-
-          <div class="two-col">
-            <div class="card">
-              <div class="card-title">Fixed Expenses</div>
-              <table class="fix-table">
-                <thead><tr><th>Item</th><th>Budgeted</th><th>Actual</th><th>Diff</th></tr></thead>
-                <tbody>
-                  ${data.fixedExpenses.map(r=>{
-                    const b=parseFloat(r.budgeted)||0, a=parseFloat(r.actual)||b, diff=b-a;
-                    return `<tr><td>${r.name}</td><td>${fmt(b)}</td><td>${fmt(a)}</td><td style="color:${diff>=0?'var(--green)':'var(--red)'}">${diff>=0?'+':''}${fmt(diff)}</td></tr>`;
-                  }).join('')}
-                  <tr style="font-weight:600"><td>Total</td><td>${fmt(data.fixedExpenses.reduce((s,r)=>s+(parseFloat(r.budgeted)||0),0))}</td><td>${fmt(fixTotal)}</td><td></td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="card">
-              <div class="card-title">Variable Spending</div>
-              <table class="fix-table">
-                <thead><tr><th>Category</th><th>Budget</th><th>Actual</th><th>Diff</th></tr></thead>
-                <tbody>
-                  ${data.categories.map(c=>{
-                    const b=parseFloat(c.budget)||0, a=catMap[c.name]||0, diff=b-a;
-                    return `<tr>
-                      <td style="display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:${catColor(c.name)};display:inline-block;flex-shrink:0"></span>${c.name}</td>
-                      <td>${fmt(b)}</td><td>${fmt(a)}</td>
-                      <td style="color:${diff>=0?'var(--green)':'var(--red)'}">${diff>=0?'+':''}${fmt(diff)}</td>
-                    </tr>`;
-                  }).join('')}
-                  <tr style="font-weight:600"><td>Total</td><td>${fmt(totalBudgetCats(data))}</td><td>${fmt(spentTotal)}</td><td></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
           <div class="card">
-            <div class="card-title">Savings & Balance</div>
-            <div style="display:flex;flex-wrap:wrap;gap:24px">
-              <div>
-                <div class="stat-label" style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Savings / Investment</div>
-                <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent2)">${fmt(savedActual)}</div>
-                ${investDisplay}
-              </div>
-              <div><div class="stat-label" style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Remaining Balance</div><div style="font-family:'DM Serif Display',serif;font-size:22px;color:${remaining>=0?'var(--green)':'var(--red)'}">${fmt(remaining)}</div></div>
-              <div><div class="stat-label" style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Savings Rate</div><div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--text)">${totalInc?((savedActual/totalInc)*100).toFixed(1):0}%</div></div>
-            </div>
+            <div class="card-title">Month Totals</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px"><span>Total Income</span><strong>${fmt(totalInc)}</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px"><span>Total Fixed</span><strong style="color:var(--red)">${fmt(fixTotal)}</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px"><span>Total Variable</span><strong style="color:var(--red)">${fmt(spentTotal)}</strong></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px"><span>Savings</span><strong style="color:var(--accent2)">${fmt(savedActual)}</strong></div>
+            <hr style="border:0; border-top:1px solid var(--border); margin:10px 0">
+            <div style="display:flex; justify-content:space-between"><span>Remaining</span><strong style="color:var(--green)">${fmt(remaining)}</strong></div>
           </div>
-
-          ${data.transactions.length ? `
-          <div class="card">
-            <div class="section-header" style="margin-bottom:12px">
-              <div class="card-title" style="margin-bottom:0">Transactions</div>
-              <span style="font-size:11px;color:var(--muted)">tap category to filter</span>
-            </div>
-            <div class="chip-bar">
-              <span class="chip all active" data-cat="__all__" onclick="toggleChip('__all__')">All</span>
-              ${data.categories.map(c=>`<span class="chip" data-cat="${c.name}" onclick="toggleChip('${c.name}')" style="border-color:${catColor(c.name)}20">${c.name}</span>`).join('')}
-            </div>
-            <div id="summary-tx-section"></div>
-          </div>` : ''}`;
-
-        activeChips.clear();
-        await renderSummaryTransactions();
+        `;
       }
-
-      async function exportSummary() {
-        const data = await getData();
-        const totalInc = (data.income||0)+(data.extraIncome||0);
-        const fixTotal = totalFixed(data);
-        const spentTotal = totalSpent(data);
-        const savedActual = data.savings||0;
-        const remaining = totalInc - fixTotal - spentTotal - savedActual;
-        const catMap = txsByCategory(data);
-        const monthName = `${MONTHS[currentMonth-1]} ${currentYear}`;
-        let txt = `SPENDING SUMMARY — ${monthName.toUpperCase()}\n${'='.repeat(40)}\n\n`;
-        txt += `Net Income:        ${fmt(data.income)}\nAdditional Income: ${fmt(data.extraIncome)}\nTotal Income:      ${fmt(totalInc)}\n\n`;
-        txt += `Fixed Expenses:    ${fmt(fixTotal)}\nVariable Spending: ${fmt(spentTotal)}\nSavings:           ${fmt(savedActual)}\nRemaining:         ${fmt(remaining)}\n\n`;
-        if (data.investSubs && data.investSubs.length) {
-          txt += `SAVINGS BREAKDOWN:\n${'-'.repeat(30)}\n`;
-          data.investSubs.forEach(r => { txt += `  ${r.name}: ${fmt(r.amount)}\n`; });
-          txt += '\n';
-        }
-        txt += `FIXED EXPENSES:\n${'-'.repeat(30)}\n`;
-        data.fixedExpenses.forEach(r => { txt += `  ${r.name}: ${fmt(parseFloat(r.actual)||parseFloat(r.budgeted)||0)}\n`; });
-        txt += `\nVARIABLE SPENDING:\n${'-'.repeat(30)}\n`;
-        data.categories.forEach(c => { txt += `  ${c.name}: ${fmt(catMap[c.name]||0)} / ${fmt(c.budget)}\n`; });
-        txt += `\nTRANSACTIONS:\n${'-'.repeat(30)}\n`;
-        data.transactions.forEach(tx => { txt += `  [${tx.date}] ${tx.cat}: ${fmt(tx.amount)}${tx.remark?' — '+tx.remark:''}\n`; });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
-        a.download = `duitku-${mk()}.txt`;
-        a.click();
-        toast('✓ Summary exported');
-      }
-
-      // ─────────────────────────────
-      // TRENDS
-      // ─────────────────────────────
-      let trendChart = null;
 
       async function renderTrends() {
         const months = [];
         for (let i = 5; i >= 0; i--) {
           let m = currentMonth - i, y = currentYear;
           while (m <= 0) { m += 12; y--; }
-          months.push({year:y, month:m, label:MONTHS[m-1].slice(0,3)+' '+String(y).slice(2)});
+          months.push({ year: y, month: m, label: MONTHS[m-1].slice(0,3) });
         }
+        const trendData = await Promise.all(months.map(m => getMonthData(monthKey(m.year, m.month))));
         
-        // Fetch all months in parallel
-        const allMonthData = await Promise.all(months.map(m => getMonthData(monthKey(m.year, m.month))));
-
-        const ds = {income:[],fixed:[],spending:[],savings:[],remaining:[]};
-        allMonthData.forEach((d) => {
-          const ti = (d.income||0)+(d.extraIncome||0);
-          const fx = totalFixed(d), sp = totalSpent(d), sv = d.savings||0;
-          ds.income.push(ti); ds.fixed.push(fx); ds.spending.push(sp); ds.savings.push(sv);
-          ds.remaining.push(Math.max(0,ti-fx-sp-sv));
-        });
-
-        if (trendChart) trendChart.destroy();
-        trendChart = new Chart(document.getElementById('trend-chart').getContext('2d'), {
-          type:'line',
-          data:{
-            labels: months.map(m=>m.label),
-            datasets:[
-              {label:'Income',data:ds.income,borderColor:'#56c496',backgroundColor:'rgba(86,196,150,0.1)',tension:0.4,fill:false,pointRadius:4},
-              {label:'Fixed',data:ds.fixed,borderColor:'#e8a46c',backgroundColor:'rgba(232,164,108,0.1)',tension:0.4,fill:false,pointRadius:4},
-              {label:'Spending',data:ds.spending,borderColor:'#c9a96e',backgroundColor:'rgba(201,169,110,0.1)',tension:0.4,fill:false,pointRadius:4},
-              {label:'Savings',data:ds.savings,borderColor:'#7c6fcd',backgroundColor:'rgba(124,111,205,0.1)',tension:0.4,fill:false,pointRadius:4},
-            ]
-          },
-          options:{
-            responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{labels:{color:'#8a84a0',font:{size:11}}}},
-            scales:{
-              x:{ticks:{color:'#8a84a0',font:{size:11}},grid:{color:'rgba(46,42,56,0.5)'}},
-              y:{ticks:{color:'#8a84a0',font:{size:11},callback:v=>'RM'+v},grid:{color:'rgba(46,42,56,0.5)'}}
-            }
-          }
-        });
-
         document.getElementById('trend-table-wrap').innerHTML = `
-          <div style="overflow-x:auto">
-          <table class="trend-table">
-            <thead><tr><th>Month</th>${months.map(m=>`<th>${m.label}</th>`).join('')}</tr></thead>
-            <tbody>
-              ${[
-                {label:'Income',key:'income',color:'#56c496'},
-                {label:'Fixed',key:'fixed',color:'#e8a46c'},
-                {label:'Spending',key:'spending',color:'#c9a96e'},
-                {label:'Savings',key:'savings',color:'#7c6fcd'},
-                {label:'Remaining',key:'remaining',color:'#8a84a0'},
-              ].map(row=>`<tr><td style="color:${row.color};font-weight:500">${row.label}</td>${ds[row.key].map(v=>`<td>${v>0?fmt(v):'—'}</td>`).join('')}</tr>`).join('')}
-            </tbody>
-          </table></div>`;
+          <table class="fix-table">
+            <thead><tr><th>Month</th><th>Spent</th><th>Fixed</th></tr></thead>
+            <tbody>${months.map((m,i) => {
+              const d = trendData[i];
+              const st = d.transactions.reduce((s,tx)=>s+tx.amount,0);
+              const fx = d.fixedExpenses.reduce((s,r)=>s+(parseFloat(r.actual)||parseFloat(r.budgeted)||0),0);
+              return `<tr><td>${m.label}</td><td>${fmt(st)}</td><td>${fmt(fx)}</td></tr>`;
+            }).join('')}</tbody>
+          </table>
+        `;
       }
-
-      // ─────────────────────────────
-      // INIT
-      // ─────────────────────────────
-      initMonth();
-      updateMonthLabel();
-      renderCurrentTab();
     </script>
   </body>
 </html>
